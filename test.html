@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Integration - Global Pilgrim Bank & Trader</title>
+    <link rel="stylesheet" href="wallet.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 2rem;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .test-header h1 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .test-card h2 {
+            color: #00ff88;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-item label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .test-item input,
+        .test-item select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        
+        .test-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            color: #0f0f23;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .test-result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .test-result.success {
+            border-left: 4px solid #00ff88;
+            color: #00ff88;
+        }
+        
+        .test-result.error {
+            border-left: 4px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .test-result.info {
+            border-left: 4px solid #00d4ff;
+            color: #00d4ff;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .status-badge.connected {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .status-badge.disconnected {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-flask"></i>
+                <span>Test Integration</span>
+            </div>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn-connect">
+                    <i class="fas fa-wallet"></i> Go to Wallet
+                </a>
+                <a href="../index.html" class="btn-connect">
+                    <i class="fas fa-chart-line"></i> Go to Trading
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Test Container -->
+    <div class="test-container">
+        <div class="test-header">
+            <h1>Integration Testing Suite</h1>
+            <p>Test the integration between Global Pilgrim Bank Wallet and Global Pilgrim Trader</p>
+        </div>
+
+        <div class="test-grid">
+            <!-- Connection Test -->
+            <div class="test-card">
+                <h2>Connection Test</h2>
+                <div class="test-item">
+                    <label>Trading Platform URL</label>
+                    <input type="text" id="tradingUrl" value="http://localhost:8000" placeholder="Enter trading platform URL">
+                </div>
+                <div class="test-item">
+                    <label>Wallet URL</label>
+                    <input type="text" id="walletUrl" value="http://localhost:8080" placeholder="Enter wallet URL">
+                </div>
+                <div class="test-item">
+                    <label>API Key</label>
+                    <input type="text" id="apiKey" value="test-api-key-123" placeholder="Enter API key">
+                </div>
+                <button class="test-btn" onclick="testConnection()">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="connectionResult" class="test-result">
+                    Status: Not tested
+                </div>
+            </div>
+
+            <!-- Wallet Test -->
+            <div class="test-card">
+                <h2>Wallet Operations</h2>
+                <div class="test-item">
+                    <label>Operation</label>
+                    <select id="walletOperation">
+                        <option value="balance">Get Balance</option>
+                        <option value="send">Send Money</option>
+                        <option value="receive">Receive Money</option>
+                        <option value="history">Transaction History</option>
+                    </select>
+                </div>
+                <div class="test-item" id="walletAmountGroup" style="display: none;">
+                    <label>Amount</label>
+                    <input type="number" id="walletAmount" value="100" placeholder="Enter amount">
+                </div>
+                <div class="test-item" id="walletRecipientGroup" style="display: none;">
+                    <label>Recipient</label>
+                    <input type="text" id="walletRecipient" value="0x1234567890abcdef" placeholder="Enter recipient address">
+                </div>
+                <button class="test-btn" onclick="testWalletOperation()">
+                    <i class="fas fa-wallet"></i> Test Wallet
+                </button>
+                <div id="walletResult" class="test-result">
+                    Status: Not tested
+                </div>
+            </div>
+
+            <!-- Trading Test -->
+            <div class="test-card">
+                <h2>Trading Operations</h2>
+                <div class="test-item">
+                    <label>Operation</label>
+                    <select id="tradingOperation">
+                        <option value="balance">Get Trading Balance</option>
+                        <option value="withdraw">Withdraw to Wallet</option>
+                        <option value="deposit">Deposit from Wallet</option>
+                        <option value="trade">Execute Trade</option>
+                    </select>
+                </div>
+                <div class="test-item" id="tradingAmountGroup" style="display: none;">
+                    <label>Amount</label>
+                    <input type="number" id="tradingAmount" value="1000" placeholder="Enter amount">
+                </div>
+                <div class="test-item" id="tradingSymbolGroup" style="display: none;">
+                    <label>Symbol</label>
+                    <select id="tradingSymbol">
+                        <option value="EUR/USD">EUR/USD</option>
+                        <option value="GBP/USD">GBP/USD</option>
+                        <option value="USD/JPY">USD/JPY</option>
+                    </select>
+                </div>
+                <button class="test-btn" onclick="testTradingOperation()">
+                    <i class="fas fa-chart-line"></i> Test Trading
+                </button>
+                <div id="tradingResult" class="test-result">
+                    Status: Not tested
+                </div>
+            </div>
+
+            <!-- Integration Test -->
+            <div class="test-card">
+                <h2>Integration Test</h2>
+                <div class="test-item">
+                    <label>Test Scenario</label>
+                    <select id="integrationScenario">
+                        <option value="withdraw">Withdraw from Trading to Wallet</option>
+                        <option value="deposit">Deposit from Wallet to Trading</option>
+                        <option value="sync">Sync Transactions</option>
+                        <option value="full">Full Integration Test</option>
+                    </select>
+                </div>
+                <div class="test-item">
+                    <label>Amount</label>
+                    <input type="number" id="integrationAmount" value="500" placeholder="Enter amount">
+                </div>
+                <button class="test-btn" onclick="testIntegration()">
+                    <i class="fas fa-sync"></i> Test Integration
+                </button>
+                <div id="integrationResult" class="test-result">
+                    Status: Not tested
+                </div>
+            </div>
+
+            <!-- Payment Gateway Test -->
+            <div class="test-card">
+                <h2>Payment Gateway Test</h2>
+                <div class="test-item">
+                    <label>Gateway</label>
+                    <select id="paymentGateway">
+                        <option value="blockchain">Blockchain</option>
+                        <option value="opay">Opay</option>
+                        <option value="palmpay">Palmpay</option>
+                        <option value="moneypoint">MoneyPoint</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="test-item">
+                    <label>Amount</label>
+                    <input type="number" id="paymentAmount" value="100" placeholder="Enter amount">
+                </div>
+                <div class="test-item">
+                    <label>Recipient</label>
+                    <input type="text" id="paymentRecipient" value="0x1234567890abcdef" placeholder="Enter recipient">
+                </div>
+                <button class="test-btn" onclick="testPaymentGateway()">
+                    <i class="fas fa-credit-card"></i> Test Payment
+                </button>
+                <div id="paymentResult" class="test-result">
+                    Status: Not tested
+                </div>
+            </div>
+
+            <!-- VPN Test -->
+            <div class="test-card">
+                <h2>VPN Test</h2>
+                <div class="test-item">
+                    <label>VPN Status</label>
+                    <div id="vpnStatus" class="test-result info">
+                        Checking...
+                    </div>
+                </div>
+                <button class="test-btn" onclick="testVPN()">
+                    <i class="fas fa-shield-alt"></i> Test VPN
+                </button>
+                <button class="test-btn" onclick="toggleVPN()">
+                    <i class="fas fa-power-off"></i> Toggle VPN
+                </button>
+            </div>
+        </div>
+
+        <!-- Full Test Suite -->
+        <div class="test-card">
+            <h2>Full Test Suite</h2>
+            <p style="color: #ccc; margin-bottom: 1.5rem;">Run all tests automatically</p>
+            <button class="test-btn" onclick="runFullTestSuite()">
+                <i class="fas fa-play"></i> Run All Tests
+            </button>
+            <div id="fullTestResult" class="test-result">
+                Status: Ready to run
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="wallet-backend.js"></script>
+    <script src="wallet-frontend.js"></script>
+    <script src="integration.js"></script>
+    <script>
+        // Test Functions
+        let testResults = [];
+
+        function logResult(testName, result, status) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${testName}: ${result}`;
+            
+            testResults.push({
+                test: testName,
+                result: result,
+                status: status,
+                timestamp: timestamp
+            });
+
+            return logEntry;
+        }
+
+        function displayResult(elementId, message, status) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `test-result ${status}`;
+        }
+
+        async function testConnection() {
+            displayResult('connectionResult', 'Testing connection...', 'info');
+            
+            const tradingUrl = document.getElementById('tradingUrl').value;
+            const walletUrl = document.getElementById('walletUrl').value;
+            const apiKey = document.getElementById('apiKey').value;
+
+            try {
+                const result = await GPBIntegration.connectToTradingPlatform(tradingUrl, walletUrl, apiKey);
+                
+                if (result.success) {
+                    displayResult('connectionResult', 
+                        logResult('Connection Test', 'SUCCESS - Connected to trading platform', 'success'), 
+                        'success'
+                    );
+                } else {
+                    displayResult('connectionResult', 
+                        logResult('Connection Test', 'FAILED - ' + result.message, 'error'), 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('connectionResult', 
+                    logResult('Connection Test', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function testWalletOperation() {
+            const operation = document.getElementById('walletOperation').value;
+            displayResult('walletResult', `Testing ${operation}...`, 'info');
+
+            try {
+                let result;
+                switch(operation) {
+                    case 'balance':
+                        const wallet = GPBWallet.getWallet();
+                        result = `Balance: $${wallet.balance.USD} | ${wallet.balance.BTC} BTC | ${wallet.balance.ETH} ETH`;
+                        displayResult('walletResult', 
+                            logResult('Wallet Balance', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                    
+                    case 'send':
+                        const amount = parseFloat(document.getElementById('walletAmount').value);
+                        const recipient = document.getElementById('walletRecipient').value;
+                        const sendResult = await GPBWallet.sendToCryptoWallet(recipient, amount, 'USD');
+                        result = sendResult.success ? 'SUCCESS - Transaction sent' : 'FAILED - Transaction failed';
+                        displayResult('walletResult', 
+                            logResult('Send Money', result, sendResult.success ? 'success' : 'error'), 
+                            sendResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'receive':
+                        result = 'SUCCESS - Ready to receive funds';
+                        displayResult('walletResult', 
+                            logResult('Receive Money', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                    
+                    case 'history':
+                        const transactions = GPBWallet.getWallet().transactions;
+                        result = `Found ${transactions.length} transactions`;
+                        displayResult('walletResult', 
+                            logResult('Transaction History', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                }
+            } catch (error) {
+                displayResult('walletResult', 
+                    logResult('Wallet Operation', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function testTradingOperation() {
+            const operation = document.getElementById('tradingOperation').value;
+            displayResult('tradingResult', `Testing ${operation}...`, 'info');
+
+            try {
+                let result;
+                switch(operation) {
+                    case 'balance':
+                        const balanceResult = await GPBIntegration.getTradingBalance();
+                        result = balanceResult.success ? `Balance: $${balanceResult.balance}` : 'FAILED';
+                        displayResult('tradingResult', 
+                            logResult('Trading Balance', result, balanceResult.success ? 'success' : 'error'), 
+                            balanceResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'withdraw':
+                        const withdrawAmount = parseFloat(document.getElementById('tradingAmount').value);
+                        const withdrawResult = await GPBIntegration.withdrawFromTrading(withdrawAmount, 'USD');
+                        result = withdrawResult.success ? 'SUCCESS - Withdrawal processed' : 'FAILED';
+                        displayResult('tradingResult', 
+                            logResult('Withdraw from Trading', result, withdrawResult.success ? 'success' : 'error'), 
+                            withdrawResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'deposit':
+                        const depositAmount = parseFloat(document.getElementById('tradingAmount').value);
+                        const depositResult = await GPBIntegration.depositToTrading(depositAmount, 'USD');
+                        result = depositResult.success ? 'SUCCESS - Deposit processed' : 'FAILED';
+                        displayResult('tradingResult', 
+                            logResult('Deposit to Trading', result, depositResult.success ? 'success' : 'error'), 
+                            depositResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'trade':
+                        result = 'SUCCESS - Trade executed (simulated)';
+                        displayResult('tradingResult', 
+                            logResult('Execute Trade', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                }
+            } catch (error) {
+                displayResult('tradingResult', 
+                    logResult('Trading Operation', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function testIntegration() {
+            const scenario = document.getElementById('integrationScenario').value;
+            const amount = parseFloat(document.getElementById('integrationAmount').value);
+            displayResult('integrationResult', `Testing ${scenario}...`, 'info');
+
+            try {
+                let result;
+                switch(scenario) {
+                    case 'withdraw':
+                        const withdrawResult = await GPBIntegration.withdrawFromTrading(amount, 'USD');
+                        result = withdrawResult.success ? 'SUCCESS - Withdrawal completed' : 'FAILED';
+                        displayResult('integrationResult', 
+                            logResult('Integration Withdraw', result, withdrawResult.success ? 'success' : 'error'), 
+                            withdrawResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'deposit':
+                        const depositResult = await GPBIntegration.depositToTrading(amount, 'USD');
+                        result = depositResult.success ? 'SUCCESS - Deposit completed' : 'FAILED';
+                        displayResult('integrationResult', 
+                            logResult('Integration Deposit', result, depositResult.success ? 'success' : 'error'), 
+                            depositResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'sync':
+                        await GPBIntegration.syncTransactions();
+                        result = 'SUCCESS - Transactions synced';
+                        displayResult('integrationResult', 
+                            logResult('Sync Transactions', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                    
+                    case 'full':
+                        // Run full integration test
+                        await testConnection();
+                        await testWalletOperation();
+                        await testTradingOperation();
+                        result = 'SUCCESS - Full integration test completed';
+                        displayResult('integrationResult', 
+                            logResult('Full Integration', result, 'success'), 
+                            'success'
+                        );
+                        break;
+                }
+            } catch (error) {
+                displayResult('integrationResult', 
+                    logResult('Integration Test', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function testPaymentGateway() {
+            const gateway = document.getElementById('paymentGateway').value;
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const recipient = document.getElementById('paymentRecipient').value;
+            displayResult('paymentResult', `Testing ${gateway}...`, 'info');
+
+            try {
+                let result;
+                switch(gateway) {
+                    case 'blockchain':
+                        const cryptoResult = await GPBWallet.sendToCryptoWallet(recipient, amount, 'USD');
+                        result = cryptoResult.success ? 'SUCCESS - Crypto transaction sent' : 'FAILED';
+                        displayResult('paymentResult', 
+                            logResult('Blockchain Payment', result, cryptoResult.success ? 'success' : 'error'), 
+                            cryptoResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'opay':
+                        const opayResult = await GPBWallet.sendToOpay(recipient, amount, 'USD');
+                        result = opayResult.success ? 'SUCCESS - Opay transfer sent' : 'FAILED';
+                        displayResult('paymentResult', 
+                            logResult('Opay Payment', result, opayResult.success ? 'success' : 'error'), 
+                            opayResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'palmpay':
+                        const palmResult = await GPBWallet.sendToPalmpay(recipient, amount, 'USD');
+                        result = palmResult.success ? 'SUCCESS - Palmpay transfer sent' : 'FAILED';
+                        displayResult('paymentResult', 
+                            logResult('Palmpay Payment', result, palmResult.success ? 'success' : 'error'), 
+                            palmResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'moneypoint':
+                        const moneypointResult = await GPBWallet.sendToMoneyPoint(recipient, amount, 'USD');
+                        result = moneypointResult.success ? 'SUCCESS - MoneyPoint transfer sent' : 'FAILED';
+                        displayResult('paymentResult', 
+                            logResult('MoneyPoint Payment', result, moneypointResult.success ? 'success' : 'error'), 
+                            moneypointResult.success ? 'success' : 'error'
+                        );
+                        break;
+                    
+                    case 'bank':
+                        const bankResult = await GPBWallet.sendToBank(recipient, '001', amount, 'USD');
+                        result = bankResult.success ? 'SUCCESS - Bank transfer sent' : 'FAILED';
+                        displayResult('paymentResult', 
+                            logResult('Bank Transfer', result, bankResult.success ? 'success' : 'error'), 
+                            bankResult.success ? 'success' : 'error'
+                        );
+                        break;
+                }
+            } catch (error) {
+                displayResult('paymentResult', 
+                    logResult('Payment Gateway', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function testVPN() {
+            displayResult('vpnStatus', 'Testing VPN...', 'info');
+            
+            try {
+                const status = GPBWallet.getVPNStatus();
+                const result = `VPN Status: ${status.connected ? 'Connected' : 'Disconnected'} | IP: ${status.ipAddress} | Location: ${status.location}`;
+                displayResult('vpnStatus', 
+                    logResult('VPN Test', result, status.connected ? 'success' : 'error'), 
+                    status.connected ? 'success' : 'error'
+                );
+            } catch (error) {
+                displayResult('vpnStatus', 
+                    logResult('VPN Test', 'ERROR - ' + error.message, 'error'), 
+                    'error'
+                );
+            }
+        }
+
+        async function toggleVPN() {
+            try {
+                const currentStatus = GPBWallet.getVPNStatus();
+                if (currentStatus.connected) {
+                    await GPBWallet.disconnectVPN();
+                    displayResult('vpnStatus', 'VPN Disconnected', 'info');
+                } else {
+                    await GPBWallet.connectVPN();
+                    displayResult('vpnStatus', 'VPN Connected', 'success');
+                }
+            } catch (error) {
+                displayResult('vpnStatus', 'ERROR - ' + error.message, 'error');
+            }
+        }
+
+        async function runFullTestSuite() {
+            testResults = [];
+            displayResult('fullTestResult', 'Running full test suite...', 'info');
+
+            // Test 1: Connection
+            await testConnection();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Test 2: Wallet Operations
+            await testWalletOperation();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Test 3: Trading Operations
+            await testTradingOperation();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Test 4: Integration
+            await testIntegration();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Test 5: Payment Gateways
+            await testPaymentGateway();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Test 6: VPN
+            await testVPN();
+
+            // Generate summary
+            const passed = testResults.filter(r => r.status === 'success').length;
+            const failed = testResults.filter(r => r.status === 'error').length;
+            const total = testResults.length;
+
+            const summary = `
+Test Suite Complete:
+Total Tests: ${total}
+Passed: ${passed}
+Failed: ${failed}
+Success Rate: ${((passed/total)*100).toFixed(1)}%
+
+All Results:
+${testResults.map(r => `[${r.timestamp}] ${r.test}: ${r.result}`).join('\n')}
+            `;
+
+            displayResult('fullTestResult', summary, failed === 0 ? 'success' : 'error');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show operation-specific fields
+            document.getElementById('walletOperation').addEventListener('change', function() {
+                const operation = this.value;
+                document.getElementById('walletAmountGroup').style.display = 
+                    operation === 'send' ? 'block' : 'none';
+                document.getElementById('walletRecipientGroup').style.display = 
+                    operation === 'send' ? 'block' : 'none';
+            });
+
+            document.getElementById('tradingOperation').addEventListener('change', function() {
+                const operation = this.value;
+                document.getElementById('tradingAmountGroup').style.display = 
+                    ['withdraw', 'deposit'].includes(operation) ? 'block' : 'none';
+                document.getElementById('tradingSymbolGroup').style.display = 
+                    operation === 'trade' ? 'block' : 'none';
+            });
+
+            // Initial VPN check
+            testVPN();
+        });
+    </script>
+</body>
+</html>

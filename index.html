@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Pilgrim Bank Wallet</title>
+    <link rel="stylesheet" href="wallet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <span>Global Pilgrim Bank</span>
+                <span class="wallet-badge">WALLET</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="active">Dashboard</a></li>
+                <li><a href="#send">Send Money</a></li>
+                <li><a href="#receive">Receive</a></li>
+                <li><a href="#history">History</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <span id="walletAddress" class="wallet-address-display"></span>
+                <button class="btn-connect" onclick="connectToTradingPlatform()">
+                    <i class="fas fa-link"></i> Connect Trading
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard-header">
+                <h1>Wallet Dashboard</h1>
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-indicator offline"></span>
+                    <span>Not Connected to Trading Platform</span>
+                </div>
+            </div>
+
+            <!-- Balance Cards -->
+            <div class="balance-cards">
+                <div class="balance-card main-balance">
+                    <div class="card-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Total Balance</h3>
+                        <div class="balance-amount" id="totalBalance">$0.00</div>
+                        <div class="balance-change" id="balanceChange">+$0.00 (0%)</div>
+                    </div>
+                </div>
+                <div class="balance-card">
+                    <div class="card-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Crypto Balance</h3>
+                        <div class="balance-amount" id="cryptoBalance">0.00000000 BTC</div>
+                        <div class="balance-sub" id="cryptoUsd">$0.00</div>
+                    </div>
+                </div>
+                <div class="balance-card">
+                    <div class="card-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Transactions</h3>
+                        <div class="balance-amount" id="transactionCount">0</div>
+                        <div class="balance-sub">This Month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn" onclick="showSection('send')">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send Money</span>
+                </button>
+                <button class="action-btn" onclick="showSection('receive')">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Receive</span>
+                </button>
+                <button class="action-btn" onclick="showDepositModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </button>
+                <button class="action-btn" onclick="showWithdrawModal()">
+                    <i class="fas fa-minus-circle"></i>
+                    <span>Withdraw</span>
+                </button>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="recent-transactions">
+                <h2>Recent Transactions</h2>
+                <div class="transaction-list" id="recentTransactions">
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No transactions yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Address -->
+            <div class="wallet-address-section">
+                <h2>Your Wallet Address</h2>
+                <div class="address-display">
+                    <div class="address-text" id="walletAddressText">Loading...</div>
+                    <button class="btn-copy" onclick="copyAddress()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="qr-code" id="qrCode">
+                    <!-- QR code will be generated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Send Money Section -->
+        <section id="send" class="section">
+            <h1>Send Money</h1>
+            
+            <div class="send-options">
+                <div class="option-card" onclick="selectSendMethod('crypto')">
+                    <i class="fab fa-bitcoin"></i>
+                    <h3>Crypto Wallet</h3>
+                    <p>Send to any cryptocurrency wallet</p>
+                </div>
+                <div class="option-card" onclick="selectSendMethod('opay')">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Opay</h3>
+                    <p>Send to Opay wallet</p>
+                </div>
+                <div class="option-card" onclick="selectSendMethod('palmpay')">
+                    <i class="fas fa-palm-tree"></i>
+                    <h3>Palmpay</h3>
+                    <p>Send to Palmpay wallet</p>
+                </div>
+                <div class="option-card" onclick="selectSendMethod('moneypoint')">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>MoneyPoint</h3>
+                    <p>Send to MoneyPoint wallet</p>
+                </div>
+                <div class="option-card" onclick="selectSendMethod('bank')">
+                    <i class="fas fa-university"></i>
+                    <h3>Bank Transfer</h3>
+                    <p>Send to bank account</p>
+                </div>
+            </div>
+
+            <!-- Send Form -->
+            <div class="send-form" id="sendForm" style="display: none;">
+                <h2 id="sendFormTitle">Send Money</h2>
+                <form id="transferForm" onsubmit="handleSendMoney(event)">
+                    <div class="form-group">
+                        <label>Recipient</label>
+                        <input type="text" id="recipientAddress" placeholder="Enter wallet address or phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <div class="amount-input">
+                            <input type="number" id="sendAmount" placeholder="0.00" required min="0.01" step="0.01">
+                            <select id="sendCurrency">
+                                <option value="USD">USD</option>
+                                <option value="BTC">BTC</option>
+                                <option value="ETH">ETH</option>
+                                <option value="NGN">NGN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Note (Optional)</label>
+                        <input type="text" id="sendNote" placeholder="Add a note">
+                    </div>
+                    <div class="transfer-summary">
+                        <div class="summary-item">
+                            <span>Fee:</span>
+                            <span id="transferFee">$0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Total:</span>
+                            <span id="totalAmount">$0.00</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-send">
+                        <i class="fas fa-paper-plane"></i> Send Now
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Receive Section -->
+        <section id="receive" class="section">
+            <h1>Receive Money</h1>
+            
+            <div class="receive-options">
+                <div class="option-card" onclick="selectReceiveMethod('crypto')">
+                    <i class="fab fa-bitcoin"></i>
+                    <h3>Crypto</h3>
+                    <p>Receive cryptocurrency</p>
+                </div>
+                <div class="option-card" onclick="selectReceiveMethod('opay')">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Opay</h3>
+                    <p>Receive via Opay</p>
+                </div>
+                <div class="option-card" onclick="selectReceiveMethod('palmpay')">
+                    <i class="fas fa-palm-tree"></i>
+                    <h3>Palmpay</h3>
+                    <p>Receive via Palmpay</p>
+                </div>
+                <div class="option-card" onclick="selectReceiveMethod('moneypoint')">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>MoneyPoint</h3>
+                    <p>Receive via MoneyPoint</p>
+                </div>
+            </div>
+
+            <!-- Receive Details -->
+            <div class="receive-details" id="receiveDetails" style="display: none;">
+                <h2 id="receiveDetailsTitle">Receive Money</h2>
+                <div class="qr-code-large" id="receiveQrCode">
+                    <!-- QR code will be generated here -->
+                </div>
+                <div class="address-display-large">
+                    <label>Your Address</label>
+                    <div class="address-text" id="receiveAddressText">Loading...</div>
+                    <button class="btn-copy" onclick="copyReceiveAddress()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="share-buttons">
+                    <button class="btn-share" onclick="shareAddress()">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                    <button class="btn-download" onclick="downloadQR()">
+                        <i class="fas fa-download"></i> Download QR
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history" class="section">
+            <h1>Transaction History</h1>
+            
+            <div class="history-filters">
+                <select id="filterType" onchange="filterTransactions()">
+                    <option value="all">All Transactions</option>
+                    <option value="sent">Sent</option>
+                    <option value="received">Received</option>
+                    <option value="deposit">Deposits</option>
+                    <option value="withdrawal">Withdrawals</option>
+                </select>
+                <select id="filterCurrency" onchange="filterTransactions()">
+                    <option value="all">All Currencies</option>
+                    <option value="USD">USD</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                    <option value="NGN">NGN</option>
+                </select>
+            </div>
+
+            <div class="transaction-list" id="fullTransactionList">
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>No transactions yet</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section">
+            <h1>Wallet Settings</h1>
+            
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>Security</h3>
+                    <div class="setting-item">
+                        <label>VPN Status</label>
+                        <div class="vpn-status">
+                            <span class="status-indicator online"></span>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Two-Factor Authentication</label>
+                        <button class="btn-enable" onclick="enable2FA()">Enable</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>Change PIN</label>
+                        <button class="btn-change" onclick="changePIN()">Change</button>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h3>API Settings</h3>
+                    <div class="setting-item">
+                        <label>API Key</label>
+                        <div class="api-key-display">
+                            <span id="apiKey">••••••••••••</span>
+                            <button class="btn-show" onclick="showApiKey()">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Webhook URL</label>
+                        <input type="text" placeholder="https://your-webhook.com">
+                    </div>
+                    <div class="setting-item">
+                        <label>Auto-sync with Trading Platform</label>
+                        <input type="checkbox" id="autoSync" checked>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h3>Payment Gateway</h3>
+                    <div class="setting-item">
+                        <label>Primary Gateway</label>
+                        <select>
+                            <option>Blockchain</option>
+                            <option>Opay</option>
+                            <option>Palmpay</option>
+                            <option>MoneyPoint</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Backup Gateway</label>
+                        <select>
+                            <option>Opay</option>
+                            <option>Palmpay</option>
+                            <option>MoneyPoint</option>
+                            <option>Blockchain</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h3>Wallet Information</h3>
+                    <div class="setting-item">
+                        <label>Wallet Address</label>
+                        <div class="wallet-info">
+                            <span id="settingsWalletAddress">Loading...</span>
+                            <button class="btn-copy" onclick="copySettingsAddress()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Blockchain Network</label>
+                        <span>Ethereum Mainnet</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Created</label>
+                        <span id="walletCreatedDate">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('depositModal')">&times;</span>
+            <h2>Deposit Funds</h2>
+            <form id="depositForm" onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="depositAmount" placeholder="0.00" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="depositMethod" required>
+                        <option value="trading">From Trading Platform</option>
+                        <option value="crypto">Cryptocurrency</option>
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Deposit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('withdrawModal')">&times;</span>
+            <h2>Withdraw Funds</h2>
+            <form id="withdrawForm" onsubmit="handleWithdraw(event)">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="withdrawAmount" placeholder="0.00" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Withdraw To</label>
+                    <select id="withdrawMethod" required>
+                        <option value="trading">To Trading Platform</option>
+                        <option value="crypto">Crypto Wallet</option>
+                        <option value="bank">Bank Account</option>
+                    </select>
+                </div>
+                <div class="form-group" id="withdrawAddressGroup" style="display: none;">
+                    <label>Destination Address</label>
+                    <input type="text" id="withdrawAddress" placeholder="Enter wallet address">
+                </div>
+                <button type="submit" class="btn-submit">Withdraw</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('confirmModal')">&times;</span>
+            <h2>Confirm Transaction</h2>
+            <div class="transaction-details">
+                <div class="detail-row">
+                    <span>Type:</span>
+                    <span id="confirmType">Send</span>
+                </div>
+                <div class="detail-row">
+                    <span>To:</span>
+                    <span id="confirmTo">0x123...</span>
+                </div>
+                <div class="detail-row">
+                    <span>Amount:</span>
+                    <span id="confirmAmount">$100.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Fee:</span>
+                    <span id="confirmFee">$1.00</span>
+                </div>
+                <div class="detail-row total">
+                    <span>Total:</span>
+                    <span id="confirmTotal">$101.00</span>
+                </div>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn-confirm" onclick="confirmTransaction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="wallet-backend.js"></script>
+    <script src="wallet-frontend.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Global Pilgrim Trader</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Global Pilgrim Trader</span>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="active">Dashboard</a></li>
+                <li><a href="#users">Users</a></li>
+                <li><a href="#trades">Trades</a></li>
+                <li><a href="#payments">Payments</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <span id="adminName">Admin</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard Content -->
+    <div class="admin-content">
+        <!-- Dashboard Overview -->
+        <section id="dashboard" class="admin-section active">
+            <h1>Admin Dashboard</h1>
+            <p class="owner-info">Owner: Olawale Abdul-Ganiyu | Account: 0022345678</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Users</h3>
+                        <p id="totalUsers">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Users</h3>
+                        <p id="activeUsers">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Pending Users</h3>
+                        <p id="pendingUsers">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Balance</h3>
+                        <p id="totalBalance">$0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Profit</h3>
+                        <p id="totalProfit">$0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Trades</h3>
+                        <p id="activeTrades">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Display -->
+            <div class="terminal-section">
+                <h2>System Terminal</h2>
+                <div class="terminal-display">
+                    <div class="terminal-header">
+                        <span class="terminal-title">Global Pilgrim Trader Terminal</span>
+                        <span class="terminal-status online">● Online</span>
+                    </div>
+                    <div class="terminal-content" id="adminTerminal">
+                        <div class="terminal-line">[SYSTEM] Initializing Global Pilgrim Trader Admin Panel...</div>
+                        <div class="terminal-line">[SYSTEM] Owner: Olawale Abdul-Ganiyu</div>
+                        <div class="terminal-line">[SYSTEM] Account: 0022345678</div>
+                        <div class="terminal-line">[SYSTEM] Contact: adeganglobal@gmail.com</div>
+                        <div class="terminal-line">[SYSTEM] Phone: +2349030277275</div>
+                        <div class="terminal-line">[NETWORK] Connected to CSCS Capital Market</div>
+                        <div class="terminal-line">[NETWORK] VPN Status: Active</div>
+                        <div class="terminal-line">[API] Payment Gateway: Connected</div>
+                        <div class="terminal-line">[SYSTEM] All systems operational</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Management -->
+        <section id="users" class="admin-section">
+            <div class="section-header">
+                <h1>User Management</h1>
+                <button class="btn-add-user" onclick="showAddUserModal()">
+                    <i class="fas fa-plus"></i> Add New User
+                </button>
+            </div>
+
+            <!-- Pending Approvals -->
+            <div class="pending-section">
+                <h2>Pending Approvals</h2>
+                <div class="user-list" id="pendingUsersList">
+                    <!-- Pending users will be loaded here -->
+                </div>
+            </div>
+
+            <!-- All Users -->
+            <div class="all-users-section">
+                <h2>All Users</h2>
+                <div class="user-list" id="allUsersList">
+                    <!-- All users will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Trade Management -->
+        <section id="trades" class="admin-section">
+            <h1>Trade Management</h1>
+            <div class="trade-list" id="tradeList">
+                <!-- Trades will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Payment Management -->
+        <section id="payments" class="admin-section">
+            <h1>Payment Management</h1>
+            <div class="payment-list" id="paymentList">
+                <!-- Payments will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Settings -->
+        <section id="settings" class="admin-section">
+            <h1>System Settings</h1>
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>Platform Settings</h3>
+                    <div class="setting-item">
+                        <label>Platform Name</label>
+                        <input type="text" value="Global Pilgrim Trader" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label>Owner Name</label>
+                        <input type="text" value="Olawale Abdul-Ganiyu" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label>Admin Account</label>
+                        <input type="text" value="0022345678" readonly>
+                    </div>
+                </div>
+                <div class="setting-card">
+                    <h3>Contact Information</h3>
+                    <div class="setting-item">
+                        <label>Email</label>
+                        <input type="email" value="adeganglobal@gmail.com" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label>Phone</label>
+                        <input type="tel" value="+2349030277275" readonly>
+                    </div>
+                </div>
+                <div class="setting-card">
+                    <h3>Trading Settings</h3>
+                    <div class="setting-item">
+                        <label>Maximum Lot Size</label>
+                        <input type="number" value="500" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label>Robot Trading Interval</label>
+                        <input type="number" value="6" readonly>
+                        <span>seconds</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Profit Threshold</label>
+                        <input type="number" value="0.02" readonly>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+            <h2>Add New User</h2>
+            <form id="addUserForm" onsubmit="handleAddUser(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="newUserName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="newUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="newUserPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Initial Balance</label>
+                    <input type="number" id="newUserBalance" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Auto-generate Password</label>
+                    <input type="checkbox" id="autoGeneratePassword" checked>
+                </div>
+                <div class="form-group" id="passwordGroup" style="display: none;">
+                    <label>Password</label>
+                    <input type="password" id="newUserPassword">
+                </div>
+                <button type="submit" class="btn-submit">Create User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Balance Modal -->
+    <div id="editBalanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editBalanceModal')">&times;</span>
+            <h2>Edit User Balance</h2>
+            <form id="editBalanceForm" onsubmit="handleEditBalance(event)">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>User</label>
+                    <input type="text" id="editUserName" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Current Balance</label>
+                    <input type="text" id="editCurrentBalance" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Action</label>
+                    <select id="balanceAction" required>
+                        <option value="credit">Credit (Add)</option>
+                        <option value="debit">Debit (Remove)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="balanceAmount" required min="0">
+                </div>
+                <button type="submit" class="btn-submit">Update Balance</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="backend.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
